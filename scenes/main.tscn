@@ -1,16 +1,18 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://scripts/platform/platform.gd" type="Script" id=1]
 [ext_resource path="res://game_objects/ball.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scripts/game/game.gd" type="Script" id=3]
 [ext_resource path="res://sprites/space_back.png" type="Texture" id=4]
 [ext_resource path="res://sounds/game_over.wav" type="AudioStream" id=5]
-
-[sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 71, 20 )
+[ext_resource path="res://sounds/destroy.wav" type="AudioStream" id=6]
+[ext_resource path="res://scripts/blocks_controller/blocks_controller.gd" type="Script" id=7]
 
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 304.5, 10 )
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 71, 20 )
 
 [sub_resource type="DynamicFontData" id=8]
 font_path = "res://fonts/arial.ttf"
@@ -67,34 +69,18 @@ __meta__ = {
 "_edit_vertical_guides_": [ 8.0, 120.0 ]
 }
 
-[node name="Sprite" type="Sprite" parent="."]
+[node name="Background" type="Sprite" parent="."]
 position = Vector2( 304, 408 )
 texture = ExtResource( 4 )
-
-[node name="Platform" type="Node2D" parent="."]
-pause_mode = 1
-position = Vector2( 288, 712 )
-script = ExtResource( 1 )
-
-[node name="ColorRect" type="ColorRect" parent="Platform"]
-margin_left = -74.0
-margin_top = -19.0
-margin_right = 70.0
-margin_bottom = 21.0
-rect_pivot_offset = Vector2( 75, 19 )
-
-[node name="KinematicBody2D" type="KinematicBody2D" parent="Platform"]
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform/KinematicBody2D"]
-position = Vector2( -2, 1 )
-shape = SubResource( 1 )
-
-[node name="Ball" parent="." instance=ExtResource( 2 )]
-pause_mode = 1
-position = Vector2( 288, 416 )
+__meta__ = {
+"_edit_lock_": true
+}
 
 [node name="Walls" type="Node2D" parent="."]
 pause_mode = 1
+__meta__ = {
+"_edit_lock_": true
+}
 
 [node name="StaticBody2D" type="StaticBody2D" parent="Walls"]
 position = Vector2( 10, 0 )
@@ -121,8 +107,42 @@ scale = Vector2( 1.5, 1 )
 position = Vector2( 300.667, -8 )
 shape = SubResource( 3 )
 
+[node name="Platform" type="Node2D" parent="."]
+pause_mode = 1
+position = Vector2( 288, 712 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="ColorRect" type="ColorRect" parent="Platform"]
+margin_left = -74.0
+margin_top = -19.0
+margin_right = 70.0
+margin_bottom = 21.0
+rect_pivot_offset = Vector2( 75, 19 )
+
+[node name="KinematicBody2D" type="KinematicBody2D" parent="Platform"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Platform/KinematicBody2D"]
+position = Vector2( -2, 1 )
+shape = SubResource( 1 )
+
+[node name="Ball" parent="." instance=ExtResource( 2 )]
+pause_mode = 1
+position = Vector2( 288, 416 )
+
 [node name="Blocks" type="Node2D" parent="."]
 pause_mode = 1
+script = ExtResource( 7 )
+
+[node name="BlockDestroySound" type="AudioStreamPlayer" parent="Blocks"]
+stream = ExtResource( 6 )
+volume_db = -12.0
+
+[node name="BlocksGenerate" type="Timer" parent="Blocks"]
+wait_time = 10.0
+autostart = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -154,12 +174,8 @@ autoplay = "text_anim"
 anims/RESET = SubResource( 6 )
 anims/text_anim = SubResource( 7 )
 
-[node name="Timer" type="Timer" parent="."]
-wait_time = 10.0
-autostart = true
-
-[node name="game_over_sound" type="AudioStreamPlayer" parent="."]
+[node name="GameOverSound" type="AudioStreamPlayer" parent="."]
 stream = ExtResource( 5 )
 volume_db = -6.0
 
-[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="timeout" from="Blocks/BlocksGenerate" to="Blocks" method="_on_BlocksGenerate_timeout"]

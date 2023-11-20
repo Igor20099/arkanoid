@@ -23,6 +23,7 @@ Events="*res://scripts/events.gd"
 
 window/size/width=608
 window/size/height=800
+window/size/resizable=false
 
 [gui]
 
